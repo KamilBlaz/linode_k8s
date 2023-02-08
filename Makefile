@@ -40,8 +40,8 @@ state-init-upgrade: checking-env
 		rm -rf .terraform && \
 		terraform init -upgrade \
 	"
-state-pull-state: checking-project checking-env
-	docker-compose run --rm -w /infra/env/${ENVIRONMENT}/state infra sh -c "terraform state pull > state.json"
+state-pull-bucket-state: checking-project checking-env
+	docker-compose run --rm -w /infra/env/${ENVIRONMENT}/state infra sh -c "terraform state pull > state-bucket.json"
 
 pull-secrets-vars: state-pull-state
 	@docker-compose run --rm -w /infra/env/${ENVIRONMENT}/state infra sh -c "echo ACCESS_KEY_ID: && \
@@ -49,11 +49,14 @@ pull-secrets-vars: state-pull-state
  		echo AWS_SECRET_ACCESS_KEY: && \
  		cat state.json | jq -r  '.resources[]   | .instances[0].attributes.secret_key'"
 
+state-pull-state-main: checking-project checking-env
+	docker-compose run --rm -w /infra/env/${ENVIRONMENT} infra sh -c "terraform state pull > state-main.json"
 
+kubeconfig_export: checking-env state-pull-state-main
+	@docker-compose run --rm -w /infra/env/${ENVIRONMENT} infra sh -c " \
+	terraform output kubeconfig | jq -r '@base64d' > ~/.kube/lke-${ENVIRONMENT}.yaml && \
+	export KUBECONFIG=$HOME/.kube/lke-${ENVIRONMENT}.yaml"
 
-#kubeconfig_export: checking-env
-#	cp ./env/${ENVIRONMENT}/config_${ENVIRONMENT} ~/.kube/config_${ENVIRONMENT}
-#	export KUBECONFIG=~/.kube/config_${ENVIRONMENT}
 
 
 plan: checking-env

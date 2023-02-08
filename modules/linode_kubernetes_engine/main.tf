@@ -23,7 +23,3 @@ resource "linode_lke_cluster" "this" {
     count = var.node_count
   }
 }
-
-
-
-
