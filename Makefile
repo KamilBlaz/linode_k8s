@@ -49,15 +49,11 @@ pull-secrets-vars: state-pull-state
  		echo AWS_SECRET_ACCESS_KEY: && \
  		cat state.json | jq -r  '.resources[]   | .instances[0].attributes.secret_key'"
 
-state-pull-state-main: checking-project checking-env
-	docker-compose run --rm -w /infra/env/${ENVIRONMENT} infra sh -c "terraform state pull > state-main.json"
 
-kubeconfig_export: checking-env state-pull-state-main
+kubeconfig_export: checking-env
 	@docker-compose run --rm -w /infra/env/${ENVIRONMENT} infra sh -c " \
-	terraform output kubeconfig | jq -r '@base64d' > ~/.kube/lke-${ENVIRONMENT}.yaml && \
-	export KUBECONFIG=$HOME/.kube/lke-${ENVIRONMENT}.yaml"
-
-
+    terraform state pull > state-main.json	&& \
+	terraform output kubeconfig | jq -r '@base64d' > ~/.kube/lke-${ENVIRONMENT}.yaml"
 
 plan: checking-env
 	docker-compose run --rm infra terraform plan
