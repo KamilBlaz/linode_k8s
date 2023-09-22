@@ -1,36 +1,67 @@
-# Linode_k8s
-Simple creating cluster in Linode Cloud via terraform
-
-Prereq:
-- Account on linode
-
-Workflow to deploy linode-cluster with state and dev env
-
-Create Access/Secret  Key 
-Fill
-File -> ~/.aws/credentials
-
-[linode-s3]
-aws_access_key_id=
-aws_secret_access_key=
-
-File -> ~/.aws/config
-
-[profile linode-s3]
-output = text
-region = eu-central-1
-
-export AWS_PROFILE=linode-s3
-
-1. state-init
-2. state-apply
-3. export AWS_SECRET_ACCESS_KEY=""
-   export AWS_ACCESS_KEY_ID="" 
-4. init
-5. plan
-6. apply
 
 
+# Project Name
+
+A brief description of your project goes here.
+
+## Table of Contents
+
+- [About](#about)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
+## About
+
+Simple creating cluster in Linode Cloud via terraform 🏗️ ☁☁
+
+## Getting Started
+
+These instructions will help you get a copy of the project up and running on your local machine.
+
+### Prerequisites
+
+- Account on Linode Cloud https://www.linode.com/
+- Docker installed https://www.docker.com/
+
+### Installation
+
+1. Configuration credentials to linode
+
+ File: ~/.aws/credentials
+
+```
+   [linode-s3]
+   aws_access_key_id=
+   aws_secret_access_key=
+```
+
+File: ~/.aws/config
+
+ ```
+   [profile linode-s3]
+   output = text
+   region = eu-central-1
+```
+2.  ``` export AWS_PROFILE=linode-s3 ```
+
+   
+## Usage
+
+1. ``` make state-init  ``` 
+2. ``` make state-apply  ```
+4. ``` make init  ```
+5. ``` make plan ```
+6. ``` make apply  ```
+
+7. Generating kubeconfing
+```
 ENVIRONMENT=dev make kubeconfig_export
 export KUBECONFIG=$HOME/.kube/lke-${ENVIRONMENT}.yaml"
-
+```
+8. Ultimately you can use kubectl
